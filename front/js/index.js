@@ -16,7 +16,7 @@ const productCard = async () => {        /* Carte des produits Index.html */
     <a href="./product.html?name=${items._id}">
 
     <article id="items${items._id}" class="items">
-        <img class="item__img" src="${items.imageUrl}" alt="${items.altTxt}"/>
+        <img src="${items.imageUrl}" alt="${items.altTxt}"/>
         <h3 class="productName">${items.name.toUpperCase()}</h3>
         <p class="productDescription">${items.description}</p>
     </article>
