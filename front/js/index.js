@@ -13,7 +13,7 @@ const productCard = async () => {        /* Carte des produits Index.html */
     await fetchProduct();
 
     document.getElementById("items").innerHTML = productData.map((items) => `
-    <a href="./product.html?id=42">
+    <a href="./product.html?name=${items._id}">
 
     <article id="items${items._id}" class="items">
         <img class="item__img" src="${items.imageUrl}" alt="${items.altTxt}"/>
@@ -25,8 +25,8 @@ const productCard = async () => {        /* Carte des produits Index.html */
     `,
       )
       .join("")  /* Pour enlever les virgules */
+    
 };
-
 
 
 productCard();   /* On appel la fonction */
