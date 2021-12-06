@@ -13,6 +13,10 @@ const fetchProduit = async () => {
     });
 };
 
+let select = document.getElementById("colors");
+console.log(select);
+
+
 const produitDisplay = async () => {
     await fetchProduit();
 
@@ -32,11 +36,20 @@ const produitDisplay = async () => {
 
     document.getElementById("description").innerHTML = `
     <p id="description">${produitData.description}</p>
-    `,
-
-    document.getElementById("colors").innerHTML = `
-    
     `
+
+    console.log(produitData.colors); // tableau des couleurs du produit
+
+    produitData.colors.forEach(colors => {
+        console.log(colors);
+        let tagOption = document.createElement("option");
+
+        tagOption.innerHTML = `${colors}`;
+        tagOption.value = `${colors}`;
+
+        select.appendChild(tagOption);
+        console.log(tagOption);
+    })
 };
 
 produitDisplay();
