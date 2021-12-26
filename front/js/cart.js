@@ -84,20 +84,20 @@ produitDelete();
 
 //----- Bouton Quantité -----//
 
-const btnQuantity = document.querySelectorAll("input");
+const btnQuantity = document.querySelectorAll(".itemQuantity");       
 console.log(btnQuantity);
 
 let inputValue;
 
-const fournirProduitQuantity = (produitRechercheQuantity) =>{
-  return produitRechercheQuantity.quantiteProduit == inputValue;
+const fournirProduitParIdAndColor = (produitRecherche) =>{            // On va chercher dans l'array les id et voir si elles sont déjà connues
+  return produitRecherche.idProduit == dataId && produitRecherche.couleurProduit == dataColor;
 }
 
 const incrementProduit = () =>{
 
-  let rechercheQuantity = produitEnregistreDansLocalStorage.find(fournirProduitQuantity);       // On verifie que l'id soit présent
-  rechercheQuantity.quantiteProduit = inputValue;                                                // On change la valeur de quantité
-  localStorage.setItem("produit", JSON.stringify(produitEnregistreDansLocalStorage));                 // on met a jour l'array dans le Local Storage
+  let produitRecherche = produitEnregistreDansLocalStorage.find(fournirProduitParIdAndColor);       // On verifie que l'id soit présent
+  produitRecherche.quantiteProduit = inputValue;                                       // On change la valeur de quantité
+  localStorage.setItem("produit", JSON.stringify(produitEnregistreDansLocalStorage));       // on met a jour l'array dans le Local Storage
 
 }
 
@@ -105,14 +105,38 @@ function changeQuantity() {
 
   for (let i = 0; i < btnQuantity.length; i++){
     let button = btnQuantity[i];
-    button.addEventListener("input", (event) =>{
+    button.addEventListener("change", (event) =>{
       event.preventDefault();
       let sender = event.target;
-      let parent = sender.closest("input");
-      inputValue = parent.getAttribute("value");
+      let parent = sender.closest("article");
+      inputValue = event.currentTarget.value;             // penser à regarder dans l'event - voir si il y a la bonne value
+      dataId = parent.getAttribute("data-id");            // pour trouver l'attribut contenant l'id du produit
+      dataColor = parent.getAttribute("data-color");      //
       incrementProduit();
     })
 
   }}
 
 changeQuantity();
+
+
+//----- Formulaire -----//
+
+let contactLocalStorage = [];
+
+document.querySelector(".cart__order__form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  let contactInfo = {
+    prenom : document.getElementById("firstName"),
+    nom : document.getElementById("lastName"),
+    adresse : document.getElementById("address"),
+    ville : document.getElementById("city"),
+    email : document.getElementById("email")
+  }
+
+  contactLocalStorage.push(contactInfo);
+  localStorage.setItem("contactForm", JSON.stringify(contactLocalStorage));
+  console.log(contactInfo);
+
+});
