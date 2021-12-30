@@ -1,142 +1,334 @@
-let produitEnregistreDansLocalStorage = JSON.parse(localStorage.getItem("produit"));                // JSON.parse c'est pour convertir les données au format JSON qui sont dans le localStorage en objet js
+const classBoutonCommander = "cart__order__form__submit";
+let blocBoutonCommander = document.getElementsByClassName(
+  "cart__order__form__submit"
+)[0];
+let chargementEnCours = false;
+
+let produitEnregistreDansLocalStorage = JSON.parse(
+  localStorage.getItem("produit")
+); // JSON.parse c'est pour convertir les données au format JSON qui sont dans le localStorage en objet js
+
 produitEnregistreDansLocalStorage;
 console.log(produitEnregistreDansLocalStorage);
 
-
 //------------ Affichage des produits du Panier -------------//
 
-const positionPanier = document.getElementById("cart__items");
+function createCartCard(element) {
+  let sectionCart = document.getElementById("cart__items");
+  let articleCart = document.createElement("article");
 
+  let divImgCart = document.createElement("div");
+  let imgCart = document.createElement("img");
 
-let structureProduitPanier = [];
+  let divCartContent = document.createElement("div");
+  let divCartContentDescription = document.createElement("div");
+  let nameCart = document.createElement("h2");
+  let colorCart = document.createElement("p");
+  let priceCart = document.createElement("p");
 
+  let divCartContentSettings = document.createElement("div");
+  let divCartQuantity = document.createElement("div");
+  let quantityCart = document.createElement("p");
+  let inputQuantityCart = document.createElement("input");
 
-for(i = 0; i < produitEnregistreDansLocalStorage.length; i++ ){
+  let divCartDelete = document.createElement("div");
+  let deleteBtnCart = document.createElement("p");
 
-    let calculePrix = produitEnregistreDansLocalStorage[i].prixProduit * produitEnregistreDansLocalStorage[i].quantiteProduit;
+  sectionCart.append(articleCart);
 
-    structureProduitPanier = structureProduitPanier +`
-    <article class="cart__item" data-id="${produitEnregistreDansLocalStorage[i].idProduit}" data-color="${produitEnregistreDansLocalStorage[i].couleurProduit}">
-                <div class="cart__item__img">
-                <img src="${produitEnregistreDansLocalStorage[i].imgProduit}" alt="${produitEnregistreDansLocalStorage[i].imgDescription}"/>
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${produitEnregistreDansLocalStorage[i].nomProduit}</h2>
-                    <p>${produitEnregistreDansLocalStorage[i].couleurProduit}</p>
-                    <p>${calculePrix}€</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${produitEnregistreDansLocalStorage[i].quantiteProduit}">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-    </article>
-    `;
+  articleCart.append(divImgCart);
+  divImgCart.append(imgCart);
+
+  articleCart.append(divCartContent);
+
+  divCartContent.append(divCartContentDescription);
+  divCartContentDescription.append(nameCart);
+  divCartContentDescription.append(colorCart);
+  divCartContentDescription.append(priceCart);
+
+  divCartContent.append(divCartContentSettings);
+  divCartContentSettings.append(divCartQuantity);
+  divCartQuantity.append(quantityCart);
+  divCartQuantity.append(inputQuantityCart);
+
+  divCartContentSettings.append(divCartDelete);
+  divCartDelete.append(deleteBtnCart);
+
+  articleCart.classList = "cart__item";
+  articleCart.dataset.id = `${element.idProduit}`;
+  articleCart.dataset.color = `${element.couleurProduit}`;
+
+  divImgCart.classList = "cart__item__img";
+  imgCart.src = `${element.imgProduit}`;
+  imgCart.alt = `${element.imgDescription}`;
+
+  divCartContent.classList = "cart__item__content";
+  divCartContentDescription.classList = "cart__item__content__description";
+  nameCart.textContent = `${element.nomProduit}`;
+  colorCart.textContent = `${element.couleurProduit}`;
+  priceCart.textContent = `${element.prixProduit}`;
+
+  divCartContentSettings.classList = "cart__item__content__settings";
+  divCartQuantity.classList = "cart__item__content__settings__quantity";
+  quantityCart.textContent = "Qté :";
+
+  inputQuantityCart.classList = "itemQuantity";
+  inputQuantityCart.setAttribute("type", "number");
+  inputQuantityCart.setAttribute("name", "itemQuantity");
+  inputQuantityCart.setAttribute("min", "1");
+  inputQuantityCart.setAttribute("max", "100");
+  inputQuantityCart.setAttribute("value", `${element.quantiteProduit}`);
+
+  divCartDelete.classList = "cart__item__content__settings__delete";
+  deleteBtnCart.classList = "deleteItem";
+  deleteBtnCart.textContent = "Supprimer";
 }
-    if(i == produitEnregistreDansLocalStorage.length){
-    positionPanier.innerHTML = structureProduitPanier;
 
+function cardCart() {
+  sectionCart = produitEnregistreDansLocalStorage.map((item) => {
+    createCartCard(item);
+  });
 }
+
+window.onload = cardCart();
 
 //----- Bouton Supprimer -----//
 const removeItem = document.querySelectorAll(".deleteItem");
 
-const fournirProduitParIdEtCouleur = (produitRecherche) =>{
-  return produitRecherche.idProduit == dataId && produitRecherche.couleurProduit == dataColor;
-}
+const fournirProduitParIdEtCouleur = (produitRecherche) => {
+  return (
+    produitRecherche.idProduit == dataId &&
+    produitRecherche.couleurProduit == dataColor
+  );
+};
 
-let dataId;                        // on déclare la variable en dehors et on la valorise 
+let dataId; // on déclare la variable en dehors et on la valorise
 let dataColor;
 
 function produitDelete() {
+  for (let i = 0; i < removeItem.length; i++) {
+    let button = removeItem[i];
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      //être capable de retrouver un parent *type, class ect* puis chercher une valeur custom dans ce parent
 
-    for ( let i = 0; i < removeItem.length; i++) {
-        let button = removeItem[i];
-        button.addEventListener("click", (event) => {
-            event.preventDefault();
-//être capable de retrouver un parent *type, class ect* puis chercher une valeur custom dans ce parent
+      let sender = event.target; // pour savoir qui à appellé l'élément
+      let parent = sender.closest("article"); // pour connaitre le parent avec le type "article" le plus proche
+      dataId = parent.getAttribute("data-id"); // pour trouver l'attribut contenant l'id du produit
+      dataColor = parent.getAttribute("data-color"); //
 
-            let sender = event.target;                          // pour savoir qui à appellé l'élément
-            let parent = sender.closest("article");             // pour connaitre le parent avec le type "article" le plus proche
-            dataId = parent.getAttribute("data-id");            // pour trouver l'attribut contenant l'id du produit
-            dataColor = parent.getAttribute("data-color");      //
+      let produit = produitEnregistreDansLocalStorage.find(
+        fournirProduitParIdEtCouleur
+      ); // on utilise find pour prendre l'id et la couleur du produit
+      let produitIndex = produitEnregistreDansLocalStorage.indexOf(produit); // on utilise indexOf pour connaitre le positionnement dans l'array
+      produitEnregistreDansLocalStorage.splice(produitIndex, 1); // on utilise splice et la variable contenant les infos et le nombre d'élément à supprimer
 
-            let produit = produitEnregistreDansLocalStorage.find(fournirProduitParIdEtCouleur);       // on utilise find pour prendre l'id et la couleur du produit
-            let produitIndex = produitEnregistreDansLocalStorage.indexOf(produit);                    // on utilise indexOf pour connaitre le positionnement dans l'array
-            produitEnregistreDansLocalStorage.splice(produitIndex,1);                     // on utilise splice et la variable contenant les infos et le nombre d'élément à supprimer
-
-            localStorage.setItem("produit", JSON.stringify(produitEnregistreDansLocalStorage));
-            parent.remove();            //on retire le parent ciblé du DOM avec remove
-        })
-    }
+      localStorage.setItem(
+        "produit",
+        JSON.stringify(produitEnregistreDansLocalStorage)
+      );
+      parent.remove(); //on retire le parent ciblé du DOM avec remove
+    });
+  }
 }
 
 produitDelete();
 
-
-
-
 //----- Bouton Quantité -----//
 
-const btnQuantity = document.querySelectorAll(".itemQuantity");       
-console.log(btnQuantity);
+const btnQuantity = document.querySelectorAll(".itemQuantity");
 
 let inputValue;
 
-const fournirProduitParIdAndColor = (produitRecherche) =>{            // On va chercher dans l'array les id et voir si elles sont déjà connues
-  return produitRecherche.idProduit == dataId && produitRecherche.couleurProduit == dataColor;
-}
+const fournirProduitParIdAndColor = (produitRecherche) => {
+  // On va chercher dans l'array les id et voir si elles sont déjà connues
+  return (
+    produitRecherche.idProduit == dataId &&
+    produitRecherche.couleurProduit == dataColor
+  );
+};
 
-const incrementProduit = () =>{
-
-  let produitRecherche = produitEnregistreDansLocalStorage.find(fournirProduitParIdAndColor);       // On verifie que l'id soit présent
-  produitRecherche.quantiteProduit = inputValue;                                       // On change la valeur de quantité
-  localStorage.setItem("produit", JSON.stringify(produitEnregistreDansLocalStorage));       // on met a jour l'array dans le Local Storage
-
-}
+const incrementProduit = () => {
+  let produitRecherche = produitEnregistreDansLocalStorage.find(
+    fournirProduitParIdAndColor
+  ); // On verifie que l'id soit présent
+  produitRecherche.quantiteProduit = inputValue; // On change la valeur de quantité
+  localStorage.setItem(
+    "produit",
+    JSON.stringify(produitEnregistreDansLocalStorage)
+  ); // on met a jour l'array dans le Local Storage
+};
 
 function changeQuantity() {
-
-  for (let i = 0; i < btnQuantity.length; i++){
+  for (let i = 0; i < btnQuantity.length; i++) {
     let button = btnQuantity[i];
-    button.addEventListener("change", (event) =>{
+    button.addEventListener("change", (event) => {
       event.preventDefault();
       let sender = event.target;
       let parent = sender.closest("article");
-      inputValue = event.currentTarget.value;             // penser à regarder dans l'event - voir si il y a la bonne value
-      dataId = parent.getAttribute("data-id");            // pour trouver l'attribut contenant l'id du produit
-      dataColor = parent.getAttribute("data-color");      //
+      inputValue = event.currentTarget.value; // penser à regarder dans l'event - voir si il y a la bonne value
+      dataId = parent.getAttribute("data-id"); // pour trouver l'attribut contenant l'id du produit
+      dataColor = parent.getAttribute("data-color"); //
       incrementProduit();
-    })
-
-  }}
+    });
+  }
+}
 
 changeQuantity();
 
+//----- Total -----//
+
+const totalPrice = produitEnregistreDansLocalStorage.reduce((total, item) => {
+  return total + item.prixProduit * item.quantiteProduit;
+}, 0);
+
+const totalQuantity = produitEnregistreDansLocalStorage.reduce(
+  (total, item) => {
+    return total + item.quantiteProduit * 1;
+  },
+  0
+);
+
+document.getElementById("totalPrice").textContent = totalPrice;
+document.getElementById("totalQuantity").textContent = totalQuantity;
 
 //----- Formulaire -----//
 
 let contactLocalStorage = [];
 
-document.querySelector(".cart__order__form").addEventListener("submit", function(e) {
-  e.preventDefault();
-
+let ajoutInfoFormulaire = () => {
   let contactInfo = {
-    prenom : document.getElementById("firstName"),
-    nom : document.getElementById("lastName"),
-    adresse : document.getElementById("address"),
-    ville : document.getElementById("city"),
-    email : document.getElementById("email")
-  }
+    prenom: document.getElementById("firstName").value,
+    nom: document.getElementById("lastName").value,
+    adresse: document.getElementById("address").value,
+    ville: document.getElementById("city").value,
+    email: document.getElementById("email").value,
+  };
 
   contactLocalStorage.push(contactInfo);
+  contactLocalStorage.push(produitEnregistreDansLocalStorage);
   localStorage.setItem("contactForm", JSON.stringify(contactLocalStorage));
-  console.log(contactInfo);
+};
 
+function verifieChamp(enumChampAVerifier) {
+  let regexNomPrenomVille = /^[A-Za-z-']{3,20}$/;
+  let regexAddress = /[a-zA-Z0-9_ -',]{3,20}$/;
+  let regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  let contactInfo = {
+    prenom: document.getElementById("firstName").value,
+    nom: document.getElementById("lastName").value,
+    adresse: document.getElementById("address").value,
+    ville: document.getElementById("city").value,
+    email: document.getElementById("email").value,
+  };
+
+  switch (enumChampAVerifier) {
+    case "prenom":
+      let txtPrenom = document.getElementById("firstNameErrorMsg");
+
+      if (!contactInfo.prenom.match(regexNomPrenomVille)) {
+        txtPrenom.classList.add("erreur");
+        AjouterErreurSiNecessaire(txtPrenom, "Prénom invalide !");
+      } else {
+        txtPrenom.classList.remove("erreur");
+        txtPrenom.textContent = "";
+      }
+      break;
+    case "nom":
+      let txtNom = document.getElementById("lastNameErrorMsg");
+      if (!contactInfo.nom.match(regexNomPrenomVille)) {
+        txtNom.classList.add("erreur");
+        AjouterErreurSiNecessaire(txtNom, "Nom invalide !");
+      } else {
+        txtNom.classList.remove("erreur");
+        txtNom.textContent = "";
+      }
+
+      break;
+    case "ville":
+      let txtVille = document.getElementById("cityErrorMsg");
+      if (!contactInfo.ville.match(regexNomPrenomVille)) {
+        txtVille.classList.add("erreur");
+        AjouterErreurSiNecessaire(txtVille, "Ville invalide !");
+      } else {
+        txtVille.classList.remove("erreur");
+        txtVille.textContent = "";
+      }
+      break;
+    case "adresse":
+      let txtAdresse = document.getElementById("addressErrorMsg");
+      if (!contactInfo.adresse.match(regexAddress)) {
+        AjouterErreurSiNecessaire(txtAdresse, "Adresse invalide !");
+        txtAdresse.classList.add("erreur");
+      } else {
+        txtAdresse.classList.remove("erreur");
+        txtAdresse.textContent = "";
+      }
+      break;
+    case "email":
+      let txtEmail = document.getElementById("emailErrorMsg");
+      /*   ! inverse l'ordre d'un booleen */
+      if (!contactInfo.email.match(regexEmail)) {
+        txtEmail.classList.add("erreur");
+        AjouterErreurSiNecessaire(txtEmail, "Email invalide !");
+      } else {
+        txtEmail.classList.remove("erreur");
+        txtEmail.textContent = "";
+      }
+      break;
+  }
+
+  GriserBoutonSiNecessaire();
+}
+
+function AjouterErreurSiNecessaire(champ, message) {
+  if (!chargementEnCours) {
+    champ.textContent = message;
+    champ.style.color = "white";
+  }
+}
+
+function GriserBoutonSiNecessaire() {
+  let formulaireContientErreur =
+    document.getElementsByClassName("erreur").length > 0;
+
+  if (formulaireContientErreur) {
+    blocBoutonCommander.classList.remove(classBoutonCommander);
+  } else {
+    blocBoutonCommander.classList.add(classBoutonCommander);
+  }
+
+  document.getElementById("order").disabled = formulaireContientErreur;
+}
+
+document.querySelector("#city").addEventListener("keydown", function (e) {
+  verifieChamp("ville");
+});
+
+document.querySelector("#address").addEventListener("keydown", function (e) {
+  verifieChamp("adresse");
+});
+document.querySelector("#lastName").addEventListener("keydown", function (e) {
+  verifieChamp("nom");
+});
+document.querySelector("#firstName").addEventListener("keydown", function (e) {
+  verifieChamp("prenom");
+});
+document.querySelector("#email").addEventListener("keydown", function (e) {
+  verifieChamp("email");
+});
+
+document.getElementById("order").addEventListener("click", function (e) {
+  ajoutInfoFormulaire();
+});
+
+document.addEventListener("DOMContentLoaded", function (event) {
+  chargementEnCours = true;
+  verifieChamp("ville");
+  verifieChamp("adresse");
+  verifieChamp("nom");
+  verifieChamp("prenom");
+  verifieChamp("email");
+  chargementEnCours = false;
 });
