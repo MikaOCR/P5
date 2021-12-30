@@ -1,32 +1,46 @@
 let productData = [];
 
 const fetchProduct = async () => {
-    await fetch("http://localhost:3000/api/products")
+  await fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
     .then((promise) => {
-        productData = promise
-        console.log(productData);
+      productData = promise;
+      console.log(productData);
     });
 };
 
-const productCard = async () => {        /* Carte des produits Index.html */
-    await fetchProduct();
+function createCard(element) {
+  let sectionProduct = document.getElementById("items");
+  let productLink = document.createElement("a");
+  let articleProduct = document.createElement("article");
+  let imgProduct = document.createElement("img");
+  let titleProduct = document.createElement("h3");
+  let textProduct = document.createElement("p");
 
-    document.getElementById("items").innerHTML = productData.map((items) => `
-    <a href="./product.html?name=${items._id}">
+  articleProduct.id = "items";
+  articleProduct.classList = "items";
+  titleProduct.classList = "productName";
+  textProduct.classList = "productDescription";
 
-    <article id="items${items._id}" class="items">
-        <img src="${items.imageUrl}" alt="${items.altTxt}"/>
-        <h3 class="productName">${items.name.toUpperCase()}</h3>
-        <p class="productDescription">${items.description}</p>
-    </article>
+  sectionProduct.append(productLink);
+  productLink.append(articleProduct);
+  articleProduct.append(imgProduct);
+  articleProduct.append(titleProduct);
+  articleProduct.append(textProduct);
 
-    </a>
-    `,
-      )
-      .join("")  /* Pour enlever les virgules */
-    
+  productLink.setAttribute("href", `./product.html?name=${element._id}`);
+  imgProduct.src = `${element.imageUrl}`;
+  imgProduct.alt = `${element.altTxt}`;
+  titleProduct.textContent = `${element.name.toUpperCase()}`;
+  textProduct.textContent = `${element.description}`;
+}
+
+const productCard = async () => {
+  await fetchProduct();
+
+  sectionProduct = productData.map((item) => {
+    createCard(item);
+  });
 };
 
-
-productCard();   /* On appel la fonction */
+window.onload = productCard();
