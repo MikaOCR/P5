@@ -70,7 +70,7 @@ const incrementProduit = () => {
     produitEnregistreDansLocalStorage.find(fournirProduitParId); // On verifie que l'id soit présent
   produitRecherche.quantiteProduit = quantityProduit; // On change la valeur de quantité
   localStorage.setItem(
-    "produit",
+    "products",
     JSON.stringify(produitEnregistreDansLocalStorage)
   ); // on met a jour l'array dans le Local Storage
 };
@@ -94,7 +94,7 @@ const ajouterProduitLocalStorage = () => {
   }
   produitEnregistreDansLocalStorage.push(optionsProduit); // On push le produit dans l'array
   localStorage.setItem(
-    "produit",
+    "products",
     JSON.stringify(produitEnregistreDansLocalStorage)
   ); // on met a jour l'array dans le Local Storage
 };
@@ -107,7 +107,7 @@ btn_ajouterPanier.addEventListener("click", (event) => {
   quantityProduit = quantity.value;
 
   produitEnregistreDansLocalStorage = JSON.parse(
-    localStorage.getItem("produit")
+    localStorage.getItem("products")
   ); //On récupère les données de l'array pour y vérifier des conditions
 
   if (

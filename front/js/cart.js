@@ -5,7 +5,7 @@ let blocBoutonCommander = document.getElementsByClassName(
 let chargementEnCours = false;
 
 let produitEnregistreDansLocalStorage = JSON.parse(
-  localStorage.getItem("produit")
+  localStorage.getItem("products")
 ); // JSON.parse c'est pour convertir les données au format JSON qui sont dans le localStorage en objet js
 
 produitEnregistreDansLocalStorage;
@@ -90,6 +90,11 @@ function cardCart() {
   });
 }
 
+if (produitEnregistreDansLocalStorage == null) {
+  // Si l'array est null alors on créer un array vide
+  produitEnregistreDansLocalStorage = [];
+}
+
 window.onload = cardCart();
 
 //----- Bouton Supprimer -----//
@@ -154,7 +159,7 @@ const incrementProduit = () => {
   ); // On verifie que l'id soit présent
   produitRecherche.quantiteProduit = inputValue; // On change la valeur de quantité
   localStorage.setItem(
-    "produit",
+    "products",
     JSON.stringify(produitEnregistreDansLocalStorage)
   ); // on met a jour l'array dans le Local Storage
 };
@@ -194,20 +199,64 @@ document.getElementById("totalQuantity").textContent = totalQuantity;
 
 //----- Formulaire -----//
 
-let contactLocalStorage = [];
+let orderIdArray = [];
+let orderId;
+let orderIdSpan;
 
-let ajoutInfoFormulaire = () => {
+function confirmationPage() {
+  const orderUrl = window.location.search.split("?order=").join("");
+  console.log(orderUrl);
+
+  orderIdSpan = document.getElementById("orderId");
+  orderIdSpan.textContent = "test";
+}
+
+function redirectionLink() {
+  document.location.href = `./confirmation.html?order=${orderId}`;
+}
+
+const ajoutInfoFormulaire = () => {
   let contactInfo = {
-    prenom: document.getElementById("firstName").value,
-    nom: document.getElementById("lastName").value,
-    adresse: document.getElementById("address").value,
-    ville: document.getElementById("city").value,
+    firstName: document.getElementById("firstName").value,
+    lastName: document.getElementById("lastName").value,
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
     email: document.getElementById("email").value,
   };
 
-  contactLocalStorage.push(contactInfo);
-  contactLocalStorage.push(produitEnregistreDansLocalStorage);
-  localStorage.setItem("contactForm", JSON.stringify(contactLocalStorage));
+  // tableau de produit (uniquement des id pas d'objet)
+  const productId = produitEnregistreDansLocalStorage.map((item) => {
+    return item.idProduit;
+  });
+
+  //un objet englobant
+  let jsonAEnvoyer = {
+    contact: contactInfo,
+    products: productId,
+  };
+
+  (async () => {
+    const rawResponse = await fetch(
+      "http://localhost:3000/api/products/order",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonAEnvoyer),
+      }
+    );
+    const result = await rawResponse.json();
+    console.log(result);
+
+    orderIdArray.push(result);
+
+    orderId = orderIdArray.map((item) => {
+      return item.orderId;
+    });
+    console.log(orderId);
+  })();
 };
 
 function verifieChamp(enumChampAVerifier) {
@@ -216,10 +265,10 @@ function verifieChamp(enumChampAVerifier) {
   let regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
   let contactInfo = {
-    prenom: document.getElementById("firstName").value,
-    nom: document.getElementById("lastName").value,
-    adresse: document.getElementById("address").value,
-    ville: document.getElementById("city").value,
+    firstName: document.getElementById("firstName").value,
+    lastName: document.getElementById("lastName").value,
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
     email: document.getElementById("email").value,
   };
 
@@ -227,7 +276,7 @@ function verifieChamp(enumChampAVerifier) {
     case "prenom":
       let txtPrenom = document.getElementById("firstNameErrorMsg");
 
-      if (!contactInfo.prenom.match(regexNomPrenomVille)) {
+      if (!contactInfo.firstName.match(regexNomPrenomVille)) {
         txtPrenom.classList.add("erreur");
         AjouterErreurSiNecessaire(txtPrenom, "Prénom invalide !");
       } else {
@@ -237,7 +286,7 @@ function verifieChamp(enumChampAVerifier) {
       break;
     case "nom":
       let txtNom = document.getElementById("lastNameErrorMsg");
-      if (!contactInfo.nom.match(regexNomPrenomVille)) {
+      if (!contactInfo.lastName.match(regexNomPrenomVille)) {
         txtNom.classList.add("erreur");
         AjouterErreurSiNecessaire(txtNom, "Nom invalide !");
       } else {
@@ -248,7 +297,7 @@ function verifieChamp(enumChampAVerifier) {
       break;
     case "ville":
       let txtVille = document.getElementById("cityErrorMsg");
-      if (!contactInfo.ville.match(regexNomPrenomVille)) {
+      if (!contactInfo.city.match(regexNomPrenomVille)) {
         txtVille.classList.add("erreur");
         AjouterErreurSiNecessaire(txtVille, "Ville invalide !");
       } else {
@@ -258,7 +307,7 @@ function verifieChamp(enumChampAVerifier) {
       break;
     case "adresse":
       let txtAdresse = document.getElementById("addressErrorMsg");
-      if (!contactInfo.adresse.match(regexAddress)) {
+      if (!contactInfo.address.match(regexAddress)) {
         AjouterErreurSiNecessaire(txtAdresse, "Adresse invalide !");
         txtAdresse.classList.add("erreur");
       } else {
@@ -319,8 +368,13 @@ document.querySelector("#email").addEventListener("keydown", function (e) {
   verifieChamp("email");
 });
 
-document.getElementById("order").addEventListener("click", function (e) {
+document.getElementById("order").addEventListener("click", async function (e) {
+  e.preventDefault();
   ajoutInfoFormulaire();
+  setTimeout(() => {
+    alert("Merci pour votre commande !");
+    redirectionLink();
+  }, 3000);
 });
 
 document.addEventListener("DOMContentLoaded", function (event) {
