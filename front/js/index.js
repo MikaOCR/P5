@@ -1,6 +1,6 @@
 let productData = [];
 
-const fetchProduct = async () => {
+const fetchProduct = async () => {                            //requête GET de l'API avec Fetch pour récupérer la liste de produit
   await fetch("http://localhost:3000/api/products")
     .then((res) => res.json())
     .then((promise) => {
@@ -35,7 +35,7 @@ function createCard(element) {
   textProduct.textContent = `${element.description}`;
 }
 
-const productCard = async () => {
+const productCard = async () => {                               // on attend la requête puis on insert les infos des produits dans les éléments
   await fetchProduct();
 
   sectionProduct = productData.map((item) => {
@@ -43,4 +43,4 @@ const productCard = async () => {
   });
 };
 
-window.onload = productCard();
+onload = productCard();                   // au chargement de la page on éxecute la fonction

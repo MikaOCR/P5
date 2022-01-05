@@ -1,19 +1,19 @@
-const produit = window.location.search.split("?name=").join(""); // pour trouver l'id et couper à partir du ?
+const produit = window.location.search.split("?name=").join("");                           // pour trouver l'id et couper à partir du ?
 console.log(produit);
 
 let produitData = [];
 
 const fetchProduit = async () => {
-  await fetch(`http://localhost:3000/api/products/${produit}`) // ajout de l'url avec l'id correspondant
+  await fetch(`http://localhost:3000/api/products/${produit}`)                            // ajout de l'url avec l'id correspondant
     .then((res) => res.json())
     .then((promise) => {
       produitData = promise;
     });
 };
 
-let select = document.getElementById("colors"); // tableau des couleurs du produit
+let select = document.getElementById("colors");
 
-const produitDisplay = async () => {
+const produitDisplay = async () => {                          // on attend la requête Fetch et on insert les infos
   await fetchProduit();
 
   (document.getElementsByClassName("item__img")[0].innerHTML = `
@@ -44,13 +44,13 @@ const produitDisplay = async () => {
 //-------------------- Gestion Panier -------------------------
 //La récupération des données sélectionnées par l'utilisateur
 
-const idForm = document.querySelector("#colors"); //Sélection de l'id du formulraire
+const idForm = document.querySelector("#colors");                                   //Sélection de l'id du formulraire
 
-const btn_ajouterPanier = document.querySelector("#addToCart"); //Sélection du bouton Ajouter au panier
+const btn_ajouterPanier = document.querySelector("#addToCart");                      //Sélection du bouton Ajouter au panier
 
 let produitEnregistreDansLocalStorage = [];
 
-let choixForm; //Mettre la valeur du formulaire dans une variable
+let choixForm;                                                                        //Mettre la valeur du formulaire dans une variable
 let quantityProduit;
 
 const fournirProduitParId = (produitRecherche) => {
@@ -67,12 +67,12 @@ const fournirProduitParIdEtCouleur = (produitRecherche) => {
 
 const incrementProduit = () => {
   let produitRecherche =
-    produitEnregistreDansLocalStorage.find(fournirProduitParId); // On verifie que l'id soit présent
-  produitRecherche.quantiteProduit = quantityProduit; // On change la valeur de quantité
+    produitEnregistreDansLocalStorage.find(fournirProduitParId);                      // On verifie que l'id soit présent
+  produitRecherche.quantiteProduit = quantityProduit;                                 // On change la valeur de quantité
   localStorage.setItem(
     "products",
     JSON.stringify(produitEnregistreDansLocalStorage)
-  ); // on met a jour l'array dans le Local Storage
+  );                                                                                  // on met a jour l'array dans le Local Storage
 };
 
 const ajouterProduitLocalStorage = () => {
@@ -92,23 +92,23 @@ const ajouterProduitLocalStorage = () => {
     // Si l'array est null alors on créer un array vide
     produitEnregistreDansLocalStorage = [];
   }
-  produitEnregistreDansLocalStorage.push(optionsProduit); // On push le produit dans l'array
+  produitEnregistreDansLocalStorage.push(optionsProduit);                             // On push le produit dans l'array
   localStorage.setItem(
     "products",
     JSON.stringify(produitEnregistreDansLocalStorage)
-  ); // on met a jour l'array dans le Local Storage
+  );                                                                                  // on met a jour l'array dans le Local Storage
 };
 
 btn_ajouterPanier.addEventListener("click", (event) => {
   //Ecouter le bouton et envoyer le panier
 
   event.preventDefault();
-  choixForm = idForm.value; // valeur du formulaire dans une variable
+  choixForm = idForm.value;                                                           // valeur du formulaire dans une variable
   quantityProduit = quantity.value;
 
   produitEnregistreDansLocalStorage = JSON.parse(
     localStorage.getItem("products")
-  ); //On récupère les données de l'array pour y vérifier des conditions
+  );                                                                                  //On récupère les données de l'array pour y vérifier des conditions
 
   if (
     produitEnregistreDansLocalStorage != null &&
@@ -124,4 +124,4 @@ btn_ajouterPanier.addEventListener("click", (event) => {
   }
 });
 
-produitDisplay();
+onload.produitDisplay();

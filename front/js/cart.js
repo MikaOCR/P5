@@ -95,7 +95,7 @@ if (produitEnregistreDansLocalStorage == null) {
   produitEnregistreDansLocalStorage = [];
 }
 
-window.onload = cardCart();
+onload = cardCart();
 
 //----- Bouton Supprimer -----//
 const removeItem = document.querySelectorAll(".deleteItem");
@@ -107,7 +107,7 @@ const fournirProduitParIdEtCouleur = (produitRecherche) => {
   );
 };
 
-let dataId; // on déclare la variable en dehors et on la valorise
+let dataId;                                         // on déclare la variable en dehors et on la valorise
 let dataColor;
 
 function produitDelete() {
@@ -115,18 +115,19 @@ function produitDelete() {
     let button = removeItem[i];
     button.addEventListener("click", (event) => {
       event.preventDefault();
+
       //être capable de retrouver un parent *type, class ect* puis chercher une valeur custom dans ce parent
 
-      let sender = event.target; // pour savoir qui à appellé l'élément
-      let parent = sender.closest("article"); // pour connaitre le parent avec le type "article" le plus proche
-      dataId = parent.getAttribute("data-id"); // pour trouver l'attribut contenant l'id du produit
-      dataColor = parent.getAttribute("data-color"); //
+      let sender = event.target;                            // pour savoir qui à appellé l'élément
+      let parent = sender.closest("article");               // pour connaitre le parent avec le type "article" le plus proche
+      dataId = parent.getAttribute("data-id");              // pour trouver l'attribut contenant l'id du produit
+      dataColor = parent.getAttribute("data-color");         //
 
       let produit = produitEnregistreDansLocalStorage.find(
         fournirProduitParIdEtCouleur
       ); // on utilise find pour prendre l'id et la couleur du produit
-      let produitIndex = produitEnregistreDansLocalStorage.indexOf(produit); // on utilise indexOf pour connaitre le positionnement dans l'array
-      produitEnregistreDansLocalStorage.splice(produitIndex, 1); // on utilise splice et la variable contenant les infos et le nombre d'élément à supprimer
+      let produitIndex = produitEnregistreDansLocalStorage.indexOf(produit);            // on utilise indexOf pour connaitre le positionnement dans l'array
+      produitEnregistreDansLocalStorage.splice(produitIndex, 1);                        // on utilise splice et la variable contenant les infos et le nombre d'élément à supprimer
 
       localStorage.setItem(
         "produit",
@@ -179,7 +180,7 @@ function changeQuantity() {
   }
 }
 
-changeQuantity();
+onload.changeQuantity();
 
 //----- Total -----//
 
@@ -201,15 +202,6 @@ document.getElementById("totalQuantity").textContent = totalQuantity;
 
 let orderIdArray = [];
 let orderId;
-let orderIdSpan;
-
-function confirmationPage() {
-  const orderUrl = window.location.search.split("?order=").join("");
-  console.log(orderUrl);
-
-  orderIdSpan = document.getElementById("orderId");
-  orderIdSpan.textContent = "test";
-}
 
 function redirectionLink() {
   document.location.href = `./confirmation.html?order=${orderId}`;
@@ -262,7 +254,7 @@ const ajoutInfoFormulaire = () => {
 function verifieChamp(enumChampAVerifier) {
   let regexNomPrenomVille = /^[A-Za-z-']{3,20}$/;
   let regexAddress = /[a-zA-Z0-9_ -',]{3,20}$/;
-  let regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   let contactInfo = {
     firstName: document.getElementById("firstName").value,
@@ -355,24 +347,67 @@ document.querySelector("#city").addEventListener("keydown", function (e) {
   verifieChamp("ville");
 });
 
+document.querySelector("#city").addEventListener("click", function (e) {
+  verifieChamp("ville");
+});
+
+document.querySelector("#city").addEventListener("focusout", function (e) {
+  verifieChamp("ville");
+});
+
 document.querySelector("#address").addEventListener("keydown", function (e) {
   verifieChamp("adresse");
 });
+
+document.querySelector("#address").addEventListener("click", function (e) {
+  verifieChamp("adresse");
+});
+
+document.querySelector("#address").addEventListener("focusout", function (e) {
+  verifieChamp("adresse");
+});
+
 document.querySelector("#lastName").addEventListener("keydown", function (e) {
   verifieChamp("nom");
 });
+
+document.querySelector("#lastName").addEventListener("click", function (e) {
+  verifieChamp("nom");
+});
+
+document.querySelector("#lastName").addEventListener("focusout", function (e) {
+  verifieChamp("nom");
+});
+
 document.querySelector("#firstName").addEventListener("keydown", function (e) {
   verifieChamp("prenom");
 });
+
+document.querySelector("#firstName").addEventListener("click", function (e) {
+  verifieChamp("prenom");
+});
+
+document.querySelector("#firstName").addEventListener("focusout", function (e) {
+  verifieChamp("prenom");
+});
+
 document.querySelector("#email").addEventListener("keydown", function (e) {
   verifieChamp("email");
 });
+
+document.querySelector("#email").addEventListener("click", function (e) {
+  verifieChamp("email");
+});
+
+document.querySelector("#email").addEventListener("focusout", function (e) {
+  verifieChamp("email");
+});
+
 
 document.getElementById("order").addEventListener("click", async function (e) {
   e.preventDefault();
   ajoutInfoFormulaire();
   setTimeout(() => {
-    alert("Merci pour votre commande !");
     redirectionLink();
   }, 3000);
 });
