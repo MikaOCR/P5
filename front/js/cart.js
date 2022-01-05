@@ -180,7 +180,7 @@ function changeQuantity() {
   }
 }
 
-onload.changeQuantity();
+onload = changeQuantity();
 
 //----- Total -----//
 
